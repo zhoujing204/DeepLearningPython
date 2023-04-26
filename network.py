@@ -70,9 +70,9 @@ class Network(object):
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
             if test_data:
-                print("Epoch {} : {} / {}".format(j,self.evaluate(test_data),n_test))
+                print(f"Epoch {j} : {self.evaluate(test_data)} / {n_test}")
             else:
-                print("Epoch {} complete".format(j))
+                print(f"Epoch {j} complete")
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying

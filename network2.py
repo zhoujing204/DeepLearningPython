@@ -179,24 +179,26 @@ class Network(object):
                 self.update_mini_batch(
                     mini_batch, eta, lmbda, len(training_data))
 
-            print("Epoch %s training complete" % j)
+            print(f"Epoch {j} training complete")
 
             if monitor_training_cost:
                 cost = self.total_cost(training_data, lmbda)
                 training_cost.append(cost)
-                print("Cost on training data: {}".format(cost))
+                print(f"Cost on training data: {cost}")
             if monitor_training_accuracy:
                 accuracy = self.accuracy(training_data, convert=True)
                 training_accuracy.append(accuracy)
-                print("Accuracy on training data: {} / {}".format(accuracy, n))
+                print(f"Accuracy on training data: {accuracy} / {n}")
             if monitor_evaluation_cost:
                 cost = self.total_cost(evaluation_data, lmbda, convert=True)
                 evaluation_cost.append(cost)
-                print("Cost on evaluation data: {}".format(cost))
+                print(f"Cost on evaluation data: {cost}")
             if monitor_evaluation_accuracy:
                 accuracy = self.accuracy(evaluation_data)
                 evaluation_accuracy.append(accuracy)
-                print("Accuracy on evaluation data: {} / {}".format(self.accuracy(evaluation_data), n_data))
+                print(
+                    f"Accuracy on evaluation data: {self.accuracy(evaluation_data)} / {n_data}"
+                )
 
             # Early stopping:
             if early_stopping_n > 0:
@@ -212,7 +214,7 @@ class Network(object):
                     return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy
 
         return evaluation_cost, evaluation_accuracy, \
-            training_cost, training_accuracy
+                                training_cost, training_accuracy
 
     def update_mini_batch(self, mini_batch, eta, lmbda, n):
         """Update the network's weights and biases by applying gradient
@@ -297,8 +299,7 @@ class Network(object):
             results = [(np.argmax(self.feedforward(x)), y)
                         for (x, y) in data]
 
-        result_accuracy = sum(int(x == y) for (x, y) in results)
-        return result_accuracy
+        return sum(int(x == y) for (x, y) in results)
 
     def total_cost(self, data, lmbda, convert=False):
         """Return the total cost for the data set ``data``.  The flag
@@ -321,9 +322,8 @@ class Network(object):
                 "weights": [w.tolist() for w in self.weights],
                 "biases": [b.tolist() for b in self.biases],
                 "cost": str(self.cost.__name__)}
-        f = open(filename, "w")
-        json.dump(data, f)
-        f.close()
+        with open(filename, "w") as f:
+            json.dump(data, f)
 
 #### Loading a Network
 def load(filename):
@@ -331,14 +331,13 @@ def load(filename):
     instance of Network.
 
     """
-    f = open(filename, "r")
-    data = json.load(f)
-    f.close()
-    cost = getattr(sys.modules[__name__], data["cost"])
-    net = Network(data["sizes"], cost=cost)
-    net.weights = [np.array(w) for w in data["weights"]]
-    net.biases = [np.array(b) for b in data["biases"]]
-    return net
+    with open(filename, "r") as f:
+        data = json.load(f)
+        cost = getattr(sys.modules[__name__], data["cost"])
+        net = Network(data["sizes"], cost=cost)
+        net.weights = [np.array(w) for w in data["weights"]]
+        net.biases = [np.array(b) for b in data["biases"]]
+        return net
 
 #### Miscellaneous functions
 def vectorized_result(j):
