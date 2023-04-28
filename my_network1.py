@@ -20,29 +20,34 @@ import random
 # Third-party libraries
 import numpy as np
 
-class Network(object):
 
-    def __init__(self, sizes):
-        """The list ``sizes`` contains the number of neurons in the
-        respective layers of the network.  For example, if the list
-        was [2, 3, 1] then it would be a three-layer network, with the
-        first layer containing 2 neurons, the second layer 3 neurons,
-        and the third layer 1 neuron.  The biases and weights for the
-        network are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.  Note that the first
-        layer is assumed to be an input layer, and by convention we
-        won't set any biases for those neurons, since biases are only
-        ever used in computing the outputs from later layers."""
+class Network(object):
+    
+    def __init__(self, sizes): 
+        """如果输入的sizes为[2, 4, 1]表示神经网络总共有三层，
+        第一层是输入层有2个节点，最后一层是输出层只有一个节点，
+        中间的是hidden layer，有4个神经元。
+        """
+        np.random.seed(0)
         self.num_layers = len(sizes)
         self.sizes = sizes
+        # biases 包括2个（总共3层，3-1=2）一维数组，长度分别是4（第二层有4个神经元）
+        # 和1（输出层只有一个节点）
         self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+        
+        # weights包括2个二维矩阵，矩阵的形状分别是4*2 和 1*4
         self.weights = [np.random.randn(y, x)
                         for x, y in zip(sizes[:-1], sizes[1:])]
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
         for b, w in zip(self.biases, self.weights):
+            print(f"b's shape is {b.shape}.\n first 5:{b[:5]}")
+            print(f"w's shape is {w.shape}.\n first 5:{w[:5]}")
+            print(f"a's shape is {a.shape}.\n first 5:{a[:5]}")            
             a = sigmoid(np.dot(w, a)+b)
+            
+            print(f"After sigmoid, a's shape is {a.shape}.\n first 5:{a[:5]}")
         return a
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
@@ -148,3 +153,5 @@ def sigmoid(z):
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
+
+
